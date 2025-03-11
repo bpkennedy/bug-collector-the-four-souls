@@ -11,7 +11,7 @@ interface PlayerProps {
   movementDirection?: { x: number; z: number } | null;
 }
 
-export const Player: React.FC<PlayerProps> = ({ position, movementDirection }) => {
+export const PlayerNew: React.FC<PlayerProps> = ({ position, movementDirection }) => {
   const meshRef = useRef<Mesh>(null);
   const targetPosition = useRef(new Vector3(...position));
   const facingDirection = useRef(new Vector3(0, 0, -1)); // Default facing forward

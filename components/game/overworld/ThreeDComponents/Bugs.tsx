@@ -4,6 +4,7 @@ import React, { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { BiomeType } from '@/lib/types/game';
 import { Vector3, Group, MathUtils } from 'three';
+import { ModelLoader } from './ModelLoader';
 
 interface BugsProps {
   biomeType: BiomeType;
@@ -111,6 +112,29 @@ export const Bugs: React.FC<BugsProps> = ({
     return bugList[Math.floor(Math.random() * bugList.length)];
   };
   
+  // Get model path for a bug based on type
+  const getBugModel = (bugType: string, isAggressive: boolean, biomeType: BiomeType) => {
+    // Map bug types to model files
+    // In a real implementation, you might have specific models for each bug type
+    // For now, we'll just use biome-specific models
+    if (isAggressive) {
+      return `/models/bug_${biomeType.toLowerCase()}_aggressive.glb`;
+    } else {
+      return `/models/bug_${biomeType.toLowerCase()}.glb`;
+    }
+  };
+  
+  // Get animation for a bug based on state
+  const getBugAnimation = (isAggressive: boolean, inInteractionRange: boolean) => {
+    if (inInteractionRange) {
+      return 'interact';
+    } else if (isAggressive) {
+      return 'aggressive';
+    } else {
+      return 'idle';
+    }
+  };
+  
   // Generate wandering bugs using memo to avoid recreation on every render
   const wanderingBugs = useMemo(() => {
     const { count, colors, aggressiveRatio } = getBugSettings(biomeType, size);
@@ -206,7 +230,6 @@ export const Bugs: React.FC<BugsProps> = ({
       if (bugMesh) {
         // Update position
         bugMesh.position.copy(bug.position);
-        bugMesh.position.y = 0.2 + Math.sin(Date.now() * 0.003 + index) * 0.1;
         
         // Update rotation to face movement direction
         const direction = new Vector3().subVectors(bug.targetPosition, bug.position);
@@ -218,45 +241,49 @@ export const Bugs: React.FC<BugsProps> = ({
             delta * 2
           );
         }
-        
-        // Make bugs "hop" when moving
-        const speed = bug.position.distanceTo(bug.targetPosition);
-        if (speed > 0.1) {
-          bugMesh.position.y += Math.abs(Math.sin(Date.now() * 0.01 + index)) * 0.1;
-        }
       }
     });
   });
   
   return (
     <group ref={groupRef}>
-      {wanderingBugs.map((bug, index) => (
-        <group key={index} position={[bug.position.x, 0, bug.position.z]}>
-          {/* Bug body */}
-          <mesh castShadow>
-            <sphereGeometry args={[bug.size * 0.5, 16, 16]} />
-            <meshStandardMaterial 
-              color={bug.color} 
-              emissive={bug.isAggressive ? "#ff0000" : "#000000"} 
-              emissiveIntensity={bug.isAggressive ? 0.3 : 0} 
+      {wanderingBugs.map((bug, index) => {
+        const inInteractionRange = bugsInRange.current.has(bug.id);
+        const isInteracting = activeInteraction === bug.id;
+        const modelPath = getBugModel(bug.bugType, bug.isAggressive, biomeType);
+        const animation = getBugAnimation(bug.isAggressive, inInteractionRange);
+        
+        return (
+          <group key={index} position={[bug.position.x, 0, bug.position.z]}>
+            {/* 3D Model for the bug */}
+            <ModelLoader
+              modelPath={modelPath}
+              position={[0, bug.isAggressive ? 0.4 : 0.2, 0]} // Raised position for better visibility
+              scale={bug.size * 4} // Increased scale for downloaded models
+              color={bug.color}
+              animation={animation}
+              animationSpeed={bug.isAggressive ? 1.5 : 1.0}
+              fallbackType={bug.isAggressive ? 'aggressiveBug' : 'bug'}
             />
-          </mesh>
-          
-          {/* Bug head (slightly smaller sphere in front) */}
-          <mesh castShadow position={[0, 0, -bug.size * 0.4]}>
-            <sphereGeometry args={[bug.size * 0.3, 16, 16]} />
-            <meshStandardMaterial color={bug.color} />
-          </mesh>
-          
-          {/* Visual indicator for passive bugs (only when in interaction range) */}
-          {!bug.isAggressive && bugsInRange.current.has(bug.id) && (
-            <mesh position={[0, bug.size * 1.5, 0]}>
-              <sphereGeometry args={[0.1, 8, 8]} />
-              <meshBasicMaterial color="#ffffff" />
-            </mesh>
-          )}
-        </group>
-      ))}
+            
+            {/* Visual indicator for passive bugs (only when in interaction range) */}
+            {!bug.isAggressive && inInteractionRange && !isInteracting && (
+              <mesh position={[0, bug.size * 1.5, 0]}>
+                <sphereGeometry args={[0.1, 8, 8]} />
+                <meshBasicMaterial color="#ffffff" />
+              </mesh>
+            )}
+            
+            {/* Visual indicator for bugs being interacted with */}
+            {isInteracting && (
+              <mesh position={[0, bug.size * 1.5, 0]}>
+                <sphereGeometry args={[0.15, 8, 8]} />
+                <meshBasicMaterial color="#ffff00" />
+              </mesh>
+            )}
+          </group>
+        );
+      })}
     </group>
   );
 }; 

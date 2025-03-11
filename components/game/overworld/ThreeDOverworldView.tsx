@@ -10,18 +10,39 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Vector3 } from 'three';
 import { Terrain } from './ThreeDComponents/Terrain';
-import { Player } from './ThreeDComponents/Player';
+import { PlayerNew } from './ThreeDComponents/PlayerNew';
 import { Trees } from './ThreeDComponents/Trees';
 import { Bugs } from './ThreeDComponents/Bugs';
 
 // Define the size of the game grid
 const GRID_SIZE = 20;
+// Define the player movement speed
+const PLAYER_SPEED = 0.1;
 
 export const ThreeDOverworldView: React.FC = () => {
   const { gameState, movePlayer, startBattle, setActiveView } = useGame();
   const [isMovementEnabled, setIsMovementEnabled] = useState(true);
   const [cameraPosition, setCameraPosition] = useState(new Vector3(5, 8, 5));
   const [cameraTarget, setCameraTarget] = useState(new Vector3(0, 0, 0));
+  
+  // Player exact position (floating point for smooth movement)
+  const [playerPosition, setPlayerPosition] = useState(() => {
+    // Initialize from game state (integer positions)
+    return new Vector3(
+      gameState.gameProgress.playerPosition.x,
+      0,
+      gameState.gameProgress.playerPosition.y
+    );
+  });
+  
+  // Current movement direction
+  const [movementDirection, setMovementDirection] = useState<{
+    x: number;
+    z: number;
+  } | null>(null);
+  
+  // Reference to track keys being pressed
+  const keysPressed = useRef<Set<string>>(new Set());
   
   // Interaction state
   const [interactionBugs, setInteractionBugs] = useState<Set<string>>(new Set());
@@ -38,28 +59,56 @@ export const ThreeDOverworldView: React.FC = () => {
   // Bug info storage
   const bugInfo = useRef<Map<string, { bugType: string, position: Vector3 }>>(new Map());
   
-  // Use ref to track the current position without creating render dependencies
-  const positionRef = useRef({ x: 0, y: 0 });
-  
-  // Update ref when position changes
-  useEffect(() => {
-    positionRef.current = gameState.gameProgress.playerPosition;
-    // Update camera target to follow player
-    setCameraTarget(new Vector3(
-      gameState.gameProgress.playerPosition.x, 
-      0, 
-      gameState.gameProgress.playerPosition.y
-    ));
-    // Update camera position to be behind and above player
-    setCameraPosition(new Vector3(
-      gameState.gameProgress.playerPosition.x - 3, 
-      5, 
-      gameState.gameProgress.playerPosition.y + 5
-    ));
-  }, [gameState.gameProgress.playerPosition]);
-  
   const currentWorld = getWorldById(gameState.gameProgress.currentWorldId);
   const currentBiome = getBiomeById(gameState.gameProgress.currentBiomeId);
+  
+  // Store bug info when encountered
+  const storeBugInfo = useCallback((bugId: string, bugType: string, position: Vector3) => {
+    bugInfo.current.set(bugId, { bugType, position });
+  }, []);
+  
+  // Update the movement direction based on keys currently pressed
+  const updateMovementDirection = useCallback(() => {
+    let x = 0;
+    let z = 0;
+    
+    // Check each movement key and update direction accordingly
+    if (keysPressed.current.has('ArrowUp') || keysPressed.current.has('w')) {
+      z -= 1;
+    }
+    if (keysPressed.current.has('ArrowDown') || keysPressed.current.has('s')) {
+      z += 1;
+    }
+    if (keysPressed.current.has('ArrowLeft') || keysPressed.current.has('a')) {
+      x -= 1;
+    }
+    if (keysPressed.current.has('ArrowRight') || keysPressed.current.has('d')) {
+      x += 1;
+    }
+    
+    // Normalize diagonal movement
+    if (x !== 0 && z !== 0) {
+      const length = Math.sqrt(x * x + z * z);
+      x /= length;
+      z /= length;
+    }
+    
+    // Set the movement direction
+    setMovementDirection({ x, z });
+  }, []);
+  
+  // Handle bug interaction distance for passive bugs
+  const handleInteractionDistance = useCallback((bugId: string, inRange: boolean) => {
+    setInteractionBugs(prevBugs => {
+      const newBugs = new Set(prevBugs);
+      if (inRange) {
+        newBugs.add(bugId);
+      } else {
+        newBugs.delete(bugId);
+      }
+      return newBugs;
+    });
+  }, []);
   
   // Handle bug collision (aggressive bugs)
   const handleBugCollision = useCallback((bugId: string, isAggressive: boolean) => {
@@ -97,18 +146,42 @@ export const ThreeDOverworldView: React.FC = () => {
     }
   }, [battleCooldown, isMovementEnabled, startBattle]);
   
-  // Handle bug interaction distance for passive bugs
-  const handleInteractionDistance = useCallback((bugId: string, inRange: boolean) => {
-    setInteractionBugs(prevBugs => {
-      const newBugs = new Set(prevBugs);
-      if (inRange) {
-        newBugs.add(bugId);
-      } else {
-        newBugs.delete(bugId);
-      }
-      return newBugs;
-    });
-  }, []);
+  // Handle talking to a bug
+  const handleTalkToBug = useCallback(() => {
+    if (!interactionMenu) return;
+    
+    const bug = bugInfo.current.get(interactionMenu.bugId);
+    const bugType = bug?.bugType || 'Unknown Bug';
+    
+    // For now, just show an alert with bug information
+    alert(`The ${bugType} chirps happily at you!`);
+    
+    // Close menu
+    setInteractionMenu(null);
+    setActiveInteraction(null);
+  }, [interactionMenu]);
+  
+  // Handle battle initiation from interaction menu
+  const handleStartBattle = useCallback(() => {
+    if (!interactionMenu) return;
+    
+    const bug = bugInfo.current.get(interactionMenu.bugId);
+    const bugType = bug?.bugType || 'Unknown Bug';
+    
+    // Get a random bug from the common bugs list that matches the type if possible
+    const matchingBugs = commonBugs.filter(b => b.name.includes(bugType));
+    const randomBug = { 
+      ...(matchingBugs.length > 0 
+        ? matchingBugs[Math.floor(Math.random() * matchingBugs.length)] 
+        : commonBugs[Math.floor(Math.random() * commonBugs.length)]),
+      id: `wild-${Date.now()}`
+    };
+    
+    // Close menu and start battle
+    setInteractionMenu(null);
+    setActiveInteraction(null);
+    startBattle(randomBug);
+  }, [interactionMenu, startBattle]);
   
   // Handle interaction menu for passive bugs
   const handleInteraction = useCallback(() => {
@@ -135,140 +208,162 @@ export const ThreeDOverworldView: React.FC = () => {
     }
   }, [interactionBugs, interactionMenu]);
   
-  // Handle movement with callback to prevent dependency issues
-  const handleMovement = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
+  // Handle key down events for movement
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    // If interaction menu is open, handle menu navigation
+    if (interactionMenu?.open) {
+      switch (e.key) {
+        case 'Escape':
+          setInteractionMenu(null);
+          setActiveInteraction(null);
+          break;
+        case '1':
+        case 'b':
+          handleStartBattle();
+          break;
+        case '2':
+        case 't':
+          handleTalkToBug();
+          break;
+      }
+      return;
+    }
+    
+    // Track the key that was pressed
+    keysPressed.current.add(e.key);
+    
+    // Non-movement keys
+    switch (e.key) {
+      case 'i':
+        setActiveView('inventory');
+        break;
+      case 'b':
+        setActiveView('bugCollection');
+        break;
+      case 'f':
+        handleInteraction();
+        break;
+      case 'z':
+        // Open bug actions panel (to be implemented)
+        break;
+    }
+    
+    // Update movement direction based on currently pressed keys
+    updateMovementDirection();
+  }, [interactionMenu, handleStartBattle, handleTalkToBug, setActiveView, handleInteraction, updateMovementDirection]);
+  
+  // Handle key up events for movement
+  const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    // Remove the key from pressed keys
+    keysPressed.current.delete(e.key);
+    
+    // Update movement direction based on remaining pressed keys
+    updateMovementDirection();
+  }, [updateMovementDirection]);
+  
+  // Set up key event listeners
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [handleKeyDown, handleKeyUp]);
+  
+  // Update game state position when player position changes significantly
+  useEffect(() => {
+    // Update the game state position (rounded to integers) when position changes enough
+    const gameX = Math.round(playerPosition.x);
+    const gameY = Math.round(playerPosition.z);
+    
+    // Only update game state if the rounded position changed
+    if (gameX !== gameState.gameProgress.playerPosition.x || 
+        gameY !== gameState.gameProgress.playerPosition.y) {
+      movePlayer(gameX, gameY);
+    }
+  }, [playerPosition, gameState.gameProgress.playerPosition, movePlayer]);
+  
+  // Update camera to follow player
+  useEffect(() => {
+    // Update camera target to follow player
+    setCameraTarget(new Vector3(
+      playerPosition.x, 
+      0, 
+      playerPosition.z
+    ));
+    
+    // Update camera position to be behind and above player
+    setCameraPosition(new Vector3(
+      playerPosition.x - 3, 
+      5, 
+      playerPosition.z + 5
+    ));
+  }, [playerPosition]);
+  
+  // Handle continuous player movement in the update loop
+  useEffect(() => {
+    // Skip if movement is disabled or interaction menu is open
     if (!isMovementEnabled || interactionMenu?.open) return;
     
-    // Get current position from ref to avoid dependency on gameState
-    let newX = positionRef.current.x;
-    let newY = positionRef.current.y;
-    
-    // Calculate new position based on direction
-    switch (direction) {
-      case 'up':
-        newY = Math.max(0, newY - 1);
-        break;
-      case 'down':
-        newY = Math.min(GRID_SIZE - 1, newY + 1);
-        break;
-      case 'left':
-        newX = Math.max(0, newX - 1);
-        break;
-      case 'right':
-        newX = Math.min(GRID_SIZE - 1, newX + 1);
-        break;
-    }
-    
-    // Only move if position changed
-    if (newX !== positionRef.current.x || newY !== positionRef.current.y) {
-      // Move the player
-      movePlayer(newX, newY);
-    }
-  }, [isMovementEnabled, interactionMenu, movePlayer]);
-  
-  // Handle battle initiation from interaction menu
-  const handleStartBattle = useCallback(() => {
-    if (!interactionMenu) return;
-    
-    const bug = bugInfo.current.get(interactionMenu.bugId);
-    const bugType = bug?.bugType || 'Unknown Bug';
-    
-    // Get a random bug from the common bugs list that matches the type if possible
-    const matchingBugs = commonBugs.filter(b => b.name.includes(bugType));
-    const randomBug = { 
-      ...(matchingBugs.length > 0 
-        ? matchingBugs[Math.floor(Math.random() * matchingBugs.length)] 
-        : commonBugs[Math.floor(Math.random() * commonBugs.length)]),
-      id: `wild-${Date.now()}`
-    };
-    
-    // Close menu and start battle
-    setInteractionMenu(null);
-    setActiveInteraction(null);
-    startBattle(randomBug);
-  }, [interactionMenu, startBattle]);
-  
-  // Handle talking to a bug
-  const handleTalkToBug = useCallback(() => {
-    if (!interactionMenu) return;
-    
-    const bug = bugInfo.current.get(interactionMenu.bugId);
-    const bugType = bug?.bugType || 'Unknown Bug';
-    
-    // For now, just show an alert with bug information
-    alert(`The ${bugType} chirps happily at you!`);
-    
-    // Close menu
-    setInteractionMenu(null);
-    setActiveInteraction(null);
-  }, [interactionMenu]);
-  
-  // Set up key listeners for player movement and interactions
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // If interaction menu is open, handle menu navigation
-      if (interactionMenu?.open) {
-        switch (e.key) {
-          case 'Escape':
-            setInteractionMenu(null);
-            setActiveInteraction(null);
-            break;
-          case '1':
-          case 'b':
-            handleStartBattle();
-            break;
-          case '2':
-          case 't':
-            handleTalkToBug();
-            break;
-        }
-        return;
-      }
-      
-      // Normal movement and interaction controls
-      switch (e.key) {
-        case 'ArrowUp':
-        case 'w':
-          handleMovement('up');
-          break;
-        case 'ArrowDown':
-        case 's':
-          handleMovement('down');
-          break;
-        case 'ArrowLeft':
-        case 'a':
-          handleMovement('left');
-          break;
-        case 'ArrowRight':
-        case 'd':
-          handleMovement('right');
-          break;
-        case 'i':
-          setActiveView('inventory');
-          break;
-        case 'b':
-          setActiveView('bugCollection');
-          break;
-        case 'f':
-          handleInteraction();
-          break;
-        case 'z':
-          // Open bug actions panel (to be implemented)
-          break;
+    const handleMovementUpdate = () => {
+      if (movementDirection && (movementDirection.x !== 0 || movementDirection.z !== 0)) {
+        // Calculate new position based on direction and speed
+        const newX = Math.max(0, Math.min(GRID_SIZE - 1, playerPosition.x + movementDirection.x * PLAYER_SPEED));
+        const newZ = Math.max(0, Math.min(GRID_SIZE - 1, playerPosition.z + movementDirection.z * PLAYER_SPEED));
+        
+        // Update player position
+        setPlayerPosition(prev => new Vector3(newX, prev.y, newZ));
       }
     };
     
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleMovement, setActiveView, handleInteraction, handleStartBattle, handleTalkToBug, interactionMenu]);
+    // Set up the animation frame loop for continuous movement
+    let animationId: number;
+    const updateLoop = () => {
+      handleMovementUpdate();
+      animationId = requestAnimationFrame(updateLoop);
+    };
+    
+    // Start the animation loop
+    animationId = requestAnimationFrame(updateLoop);
+    
+    // Clean up
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
+  }, [isMovementEnabled, interactionMenu, movementDirection, playerPosition]);
   
   // On-screen movement controls for touch devices
   const renderDirectionControls = () => {
+    const handleDirectionButtonDown = (direction: string) => {
+      // Simulate key press
+      const key = direction === 'up' ? 'w' : 
+                  direction === 'down' ? 's' : 
+                  direction === 'left' ? 'a' : 'd';
+      
+      keysPressed.current.add(key);
+      updateMovementDirection();
+    };
+    
+    const handleDirectionButtonUp = (direction: string) => {
+      // Simulate key release
+      const key = direction === 'up' ? 'w' : 
+                  direction === 'down' ? 's' : 
+                  direction === 'left' ? 'a' : 'd';
+      
+      keysPressed.current.delete(key);
+      updateMovementDirection();
+    };
+    
     return (
       <div className="grid grid-cols-3 gap-2 w-32 mt-4">
         <div></div>
         <Button 
-          onClick={() => handleMovement('up')} 
+          onMouseDown={() => handleDirectionButtonDown('up')}
+          onMouseUp={() => handleDirectionButtonUp('up')}
+          onTouchStart={() => handleDirectionButtonDown('up')}
+          onTouchEnd={() => handleDirectionButtonUp('up')}
           variant="outline" 
           className="p-2" 
           disabled={!isMovementEnabled || !!interactionMenu}
@@ -278,7 +373,10 @@ export const ThreeDOverworldView: React.FC = () => {
         <div></div>
         
         <Button 
-          onClick={() => handleMovement('left')} 
+          onMouseDown={() => handleDirectionButtonDown('left')}
+          onMouseUp={() => handleDirectionButtonUp('left')}
+          onTouchStart={() => handleDirectionButtonDown('left')}
+          onTouchEnd={() => handleDirectionButtonUp('left')}
           variant="outline" 
           className="p-2" 
           disabled={!isMovementEnabled || !!interactionMenu}
@@ -287,7 +385,10 @@ export const ThreeDOverworldView: React.FC = () => {
         </Button>
         <div></div>
         <Button 
-          onClick={() => handleMovement('right')} 
+          onMouseDown={() => handleDirectionButtonDown('right')}
+          onMouseUp={() => handleDirectionButtonUp('right')}
+          onTouchStart={() => handleDirectionButtonDown('right')}
+          onTouchEnd={() => handleDirectionButtonUp('right')}
           variant="outline" 
           className="p-2" 
           disabled={!isMovementEnabled || !!interactionMenu}
@@ -297,7 +398,10 @@ export const ThreeDOverworldView: React.FC = () => {
         
         <div></div>
         <Button 
-          onClick={() => handleMovement('down')} 
+          onMouseDown={() => handleDirectionButtonDown('down')}
+          onMouseUp={() => handleDirectionButtonUp('down')}
+          onTouchStart={() => handleDirectionButtonDown('down')}
+          onTouchEnd={() => handleDirectionButtonUp('down')}
           variant="outline" 
           className="p-2" 
           disabled={!isMovementEnabled || !!interactionMenu}
@@ -356,11 +460,6 @@ export const ThreeDOverworldView: React.FC = () => {
     );
   };
   
-  // Store bug info when encountered
-  const storeBugInfo = useCallback((bugId: string, bugType: string, position: Vector3) => {
-    bugInfo.current.set(bugId, { bugType, position });
-  }, []);
-  
   return (
     <div className="flex flex-col h-full">
       {/* Header section */}
@@ -370,7 +469,7 @@ export const ThreeDOverworldView: React.FC = () => {
           <p className="text-gray-400">{currentBiome?.name || 'Unknown Biome'}</p>
         </div>
         <div className="text-sm">
-          <p>Position: ({gameState.gameProgress.playerPosition.x}, {gameState.gameProgress.playerPosition.y})</p>
+          <p>Position: ({Math.round(playerPosition.x)}, {Math.round(playerPosition.z)})</p>
           <p className="text-xs text-gray-500">
             Movement: {isMovementEnabled ? (battleCooldown ? 'Cooldown' : 'Enabled') : 'Disabled'}
           </p>
@@ -419,7 +518,10 @@ export const ThreeDOverworldView: React.FC = () => {
           />
           <Bugs
             biomeType={currentBiome?.type || 'Grass'}
-            playerPosition={gameState.gameProgress.playerPosition}
+            playerPosition={{
+              x: playerPosition.x,
+              y: playerPosition.z
+            }}
             size={GRID_SIZE}
             onBugCollision={handleBugCollision}
             activeInteraction={activeInteraction}
@@ -428,12 +530,9 @@ export const ThreeDOverworldView: React.FC = () => {
           />
           
           {/* Player character */}
-          <Player 
-            position={[
-              gameState.gameProgress.playerPosition.x, 
-              0, 
-              gameState.gameProgress.playerPosition.y
-            ]} 
+          <PlayerNew 
+            position={[playerPosition.x, 0, playerPosition.z]}
+            movementDirection={movementDirection}
           />
         </Canvas>
         
