@@ -18,7 +18,7 @@ export const BattleView: React.FC = () => {
       // The opponent's turn is now handled in the executeBattleAction function
       // This effect is kept for future enhancements
     }
-  }, [gameState.activeBattle?.turn]);
+  }, [gameState.activeBattle]);
   
   // If there's no active battle, show a message
   if (!gameState.activeBattle) {

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useGame } from '@/contexts/GameContext';
-import { OverworldView } from './overworld/OverworldView';
+import { ThreeDOverworldView } from './overworld/ThreeDOverworldView';
 import { BattleView } from './battle/BattleView';
 import { Button } from '@/components/ui/button';
 import { BugCard } from '@/components/game/bugs/BugCard';
@@ -103,7 +103,7 @@ export const GameContainer: React.FC = () => {
   const renderView = () => {
     switch (gameState.activeView) {
       case 'overworld':
-        return <OverworldView />;
+        return <ThreeDOverworldView />;
       case 'battle':
         return <BattleView />;
       case 'inventory':
@@ -113,7 +113,7 @@ export const GameContainer: React.FC = () => {
       case 'dialogue':
         return <DialogueView />;
       default:
-        return <OverworldView />;
+        return <ThreeDOverworldView />;
     }
   };
   
