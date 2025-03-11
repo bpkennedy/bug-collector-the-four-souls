@@ -5,6 +5,7 @@ import { useGame } from '@/contexts/GameContext';
 import { OverworldView } from './overworld/OverworldView';
 import { BattleView } from './battle/BattleView';
 import { Button } from '@/components/ui/button';
+import { BugCard } from '@/components/game/bugs/BugCard';
 
 // This component will be implemented in future updates
 const InventoryView = () => {
@@ -24,20 +25,46 @@ const InventoryView = () => {
   );
 };
 
-// This component will be implemented in future updates
+// Bug Collection View to display captured bugs
 const BugCollectionView = () => {
-  const { setActiveView } = useGame();
+  const { gameState, setActiveView } = useGame();
+  
+  // Get the collected bugs from the game state
+  const collectedBugs = gameState.bugs.filter(bug => 
+    gameState.gameProgress.collectedBugs.includes(bug.id)
+  );
   
   return (
-    <div className="flex flex-col items-center justify-center h-full p-4">
-      <h2 className="text-2xl font-bold mb-4">Bug Collection</h2>
-      <p className="text-gray-400 mb-6">This feature will be implemented in a future update.</p>
-      <Button 
-        onClick={() => setActiveView('overworld')}
-        variant="default"
-      >
-        Return to Game
-      </Button>
+    <div className="flex flex-col h-full p-4">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Bug Collection</h2>
+        <Button 
+          onClick={() => setActiveView('overworld')}
+          variant="default"
+        >
+          Return to Game
+        </Button>
+      </div>
+      
+      {collectedBugs.length === 0 ? (
+        <div className="flex flex-col items-center justify-center flex-1">
+          <p className="text-gray-400 mb-4">Your bug collection is empty.</p>
+          <p className="text-gray-400">Capture bugs in battle to add them to your collection!</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto">
+          {collectedBugs.map(bug => (
+            <div key={bug.id} className="flex justify-center">
+              <BugCard 
+                bug={bug} 
+                size="sm" 
+                showActions={true}
+                showDetails={true}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
