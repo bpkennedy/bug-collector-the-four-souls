@@ -127,16 +127,32 @@
 
 /* Fix for button icon colors */
 button svg {
-  color: currentColor !important;
+  color: black !important;
 }
 
 /* Ensure outline buttons have visible text */
 .btn-outline, 
 button[variant="outline"] {
-  color: white !important;
+  color: black !important;
 }
 
-/* Ensure buttons are always visible */
+/* Ensure buttons are always visible with black text */
 button {
-  color: white;
+  color: black !important;
+}
+
+/* Override all button variants to use black text */
+.button-default,
+.button-destructive,
+.button-outline,
+.button-secondary,
+.button-ghost,
+.button-link,
+button[variant="default"],
+button[variant="destructive"],
+button[variant="outline"],
+button[variant="secondary"],
+button[variant="ghost"],
+button[variant="link"] {
+  color: black !important;
 }
