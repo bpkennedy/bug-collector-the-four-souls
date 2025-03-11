@@ -28,6 +28,7 @@ interface GameContextProps {
   startBattle: (opponentBug: Bug) => void;
   endBattle: (outcome: 'win' | 'lose' | 'flee' | 'capture') => void;
   executeBattleAction: (actionId: string) => void;
+  switchBattleBug: (bugId: string) => void;
   // World navigation
   movePlayer: (x: number, y: number) => void;
   changeWorld: (worldId: string) => void;
@@ -355,29 +356,195 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const executeBattleAction = (actionId: string) => {
-    // This would calculate damage and apply effects based on the action
-    // For now, we'll just add a log entry
     setGameState(prevState => {
       if (!prevState.activeBattle) return prevState;
       
       const playerBug = prevState.activeBattle.playerBug;
+      const opponentBug = prevState.activeBattle.opponentBug;
       const action = playerBug.actions.find(a => a.id === actionId);
       
       if (!action) return prevState;
       
+      // Calculate damage based on action damage and bug stats
+      const damage = action.damage ? Math.floor(action.damage * (playerBug.attack / 100 + 1)) : 0;
+      
+      // Apply damage to opponent
+      const updatedOpponentBug = {
+        ...opponentBug,
+        hp: Math.max(0, opponentBug.hp - damage)
+      };
+      
+      // Create log entry
       const newLog = [...prevState.activeBattle.log, `${playerBug.name} used ${action.name}!`];
       
+      if (damage > 0) {
+        newLog.push(`${opponentBug.name} took ${damage} damage!`);
+      }
+      
+      // Check if opponent is defeated
+      if (updatedOpponentBug.hp <= 0) {
+        newLog.push(`${opponentBug.name} was defeated!`);
+        
+        // Return updated state with opponent defeated
+        return {
+          ...prevState,
+          activeBattle: {
+            ...prevState.activeBattle,
+            opponentBug: updatedOpponentBug,
+            log: newLog,
+            turn: 'player' // Keep player's turn for end battle actions
+          }
+        };
+      }
+      
+      // Return updated state and switch to opponent's turn
       return {
         ...prevState,
         activeBattle: {
           ...prevState.activeBattle,
+          opponentBug: updatedOpponentBug,
           log: newLog,
           turn: 'opponent'
         }
       };
     });
     
-    // TODO: Implement opponent turn logic
+    // Handle opponent's turn after a short delay
+    setTimeout(() => {
+      setGameState(prevState => {
+        if (!prevState.activeBattle || prevState.activeBattle.turn !== 'opponent') return prevState;
+        
+        const playerBug = prevState.activeBattle.playerBug;
+        const opponentBug = prevState.activeBattle.opponentBug;
+        
+        // If opponent is defeated, don't take a turn
+        if (opponentBug.hp <= 0) return prevState;
+        
+        // Select a random action from opponent's actions
+        const availableActions = opponentBug.actions.filter(a => a.isBattle);
+        if (availableActions.length === 0) return prevState;
+        
+        const randomAction = availableActions[Math.floor(Math.random() * availableActions.length)];
+        
+        // Calculate damage based on action damage and bug stats
+        const damage = randomAction.damage ? Math.floor(randomAction.damage * (opponentBug.attack / 100 + 1)) : 0;
+        
+        // Apply damage to player
+        const updatedPlayerBug = {
+          ...playerBug,
+          hp: Math.max(0, playerBug.hp - damage)
+        };
+        
+        // Create log entry
+        const newLog = [...prevState.activeBattle.log, `${opponentBug.name} used ${randomAction.name}!`];
+        
+        if (damage > 0) {
+          newLog.push(`${playerBug.name} took ${damage} damage!`);
+        }
+        
+        // Check if player is defeated
+        if (updatedPlayerBug.hp <= 0) {
+          newLog.push(`${playerBug.name} was defeated!`);
+          
+          // Auto-end battle with loss after a short delay
+          setTimeout(() => endBattle('lose'), 1500);
+        }
+        
+        // Return updated state and switch back to player's turn
+        return {
+          ...prevState,
+          activeBattle: {
+            ...prevState.activeBattle,
+            playerBug: updatedPlayerBug,
+            log: newLog,
+            turn: updatedPlayerBug.hp <= 0 ? 'opponent' : 'player' // Only switch to player if not defeated
+          }
+        };
+      });
+    }, 1000); // 1 second delay for opponent's turn
+  };
+
+  // Add the switchBattleBug function after the executeBattleAction function
+  const switchBattleBug = (bugId: string) => {
+    setGameState(prevState => {
+      if (!prevState.activeBattle) return prevState;
+      
+      // Find the bug to switch to
+      const newBug = prevState.bugs.find(bug => bug.id === bugId);
+      if (!newBug) return prevState;
+      
+      // Create log entry
+      const newLog = [
+        ...prevState.activeBattle.log, 
+        `${prevState.activeBattle.playerBug.name} was switched out!`,
+        `Go, ${newBug.name}!`
+      ];
+      
+      // Return updated state with new player bug
+      return {
+        ...prevState,
+        activeBattle: {
+          ...prevState.activeBattle,
+          playerBug: newBug,
+          log: newLog,
+          turn: 'opponent' // Switching bugs uses up the player's turn
+        }
+      };
+    });
+    
+    // Handle opponent's turn after a short delay (similar to executeBattleAction)
+    setTimeout(() => {
+      setGameState(prevState => {
+        if (!prevState.activeBattle || prevState.activeBattle.turn !== 'opponent') return prevState;
+        
+        const playerBug = prevState.activeBattle.playerBug;
+        const opponentBug = prevState.activeBattle.opponentBug;
+        
+        // If opponent is defeated, don't take a turn
+        if (opponentBug.hp <= 0) return prevState;
+        
+        // Select a random action from opponent's actions
+        const availableActions = opponentBug.actions.filter(a => a.isBattle);
+        if (availableActions.length === 0) return prevState;
+        
+        const randomAction = availableActions[Math.floor(Math.random() * availableActions.length)];
+        
+        // Calculate damage based on action damage and bug stats
+        const damage = randomAction.damage ? Math.floor(randomAction.damage * (opponentBug.attack / 100 + 1)) : 0;
+        
+        // Apply damage to player
+        const updatedPlayerBug = {
+          ...playerBug,
+          hp: Math.max(0, playerBug.hp - damage)
+        };
+        
+        // Create log entry
+        const newLog = [...prevState.activeBattle.log, `${opponentBug.name} used ${randomAction.name}!`];
+        
+        if (damage > 0) {
+          newLog.push(`${playerBug.name} took ${damage} damage!`);
+        }
+        
+        // Check if player is defeated
+        if (updatedPlayerBug.hp <= 0) {
+          newLog.push(`${playerBug.name} was defeated!`);
+          
+          // Auto-end battle with loss after a short delay
+          setTimeout(() => endBattle('lose'), 1500);
+        }
+        
+        // Return updated state and switch back to player's turn
+        return {
+          ...prevState,
+          activeBattle: {
+            ...prevState.activeBattle,
+            playerBug: updatedPlayerBug,
+            log: newLog,
+            turn: updatedPlayerBug.hp <= 0 ? 'opponent' : 'player' // Only switch to player if not defeated
+          }
+        };
+      });
+    }, 1000); // 1 second delay for opponent's turn
   };
 
   // World navigation functions
@@ -508,6 +675,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       startBattle,
       endBattle,
       executeBattleAction,
+      switchBattleBug,
       // World navigation
       movePlayer,
       changeWorld,

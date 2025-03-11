@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGame } from '@/contexts/GameContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,9 +8,17 @@ import { Progress } from '@/components/ui/progress';
 import { BugCard } from '@/components/game/bugs/BugCard';
 
 export const BattleView: React.FC = () => {
-  const { gameState, executeBattleAction, endBattle } = useGame();
+  const { gameState, executeBattleAction, endBattle, switchBattleBug } = useGame();
   const [activePanel, setActivePanel] = useState<'none' | 'actions' | 'deck'>('none');
   const [selectedDeckBug, setSelectedDeckBug] = useState<string | null>(null);
+  
+  // Effect to handle opponent's turn automatically
+  useEffect(() => {
+    if (gameState.activeBattle && gameState.activeBattle.turn === 'opponent') {
+      // The opponent's turn is now handled in the executeBattleAction function
+      // This effect is kept for future enhancements
+    }
+  }, [gameState.activeBattle?.turn]);
   
   // If there's no active battle, show a message
   if (!gameState.activeBattle) {
@@ -49,10 +57,11 @@ export const BattleView: React.FC = () => {
   
   // Handle bug switch from deck
   const handleDealBug = () => {
-    // This would be implemented to switch the active bug
-    // For now, just close the panel
-    setActivePanel('none');
-    setSelectedDeckBug(null);
+    if (selectedDeckBug) {
+      switchBattleBug(selectedDeckBug);
+      setActivePanel('none');
+      setSelectedDeckBug(null);
+    }
   };
   
   // Handle battle outcome
@@ -201,15 +210,19 @@ export const BattleView: React.FC = () => {
   
   // Render the deck panel
   const renderDeckPanel = () => {
-    // Get the player's collected bugs (excluding the current battle bug)
+    // Get all the player's collected bugs (including the current battle bug)
     const deckBugs = gameState.bugs.filter(bug => 
-      gameState.gameProgress.collectedBugs.includes(bug.id) && bug.id !== playerBug.id
+      gameState.gameProgress.collectedBugs.includes(bug.id)
     );
     
+    // If a bug is selected, show its details
     if (selectedDeckBug) {
       // Show details for selected bug
       const bug = gameState.bugs.find(b => b.id === selectedDeckBug);
       if (!bug) return null;
+      
+      // Determine if this is the current battle bug
+      const isCurrentBattleBug = bug.id === playerBug.id;
       
       return (
         <div className="absolute bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700 p-4 z-10">
@@ -224,20 +237,24 @@ export const BattleView: React.FC = () => {
               size="sm" 
               showActions={true}
               showDetails={true}
+              isSelected={isCurrentBattleBug}
             />
             
             <div className="flex-grow flex flex-col justify-between">
               <div className="text-sm mb-4">
                 <p className="mb-2">{bug.description || `A ${bug.type.toLowerCase()} type bug.`}</p>
                 <p>Level: {bug.level} | XP: {bug.xp}/{bug.maxXp}</p>
+                {isCurrentBattleBug && (
+                  <p className="mt-2 text-yellow-400 font-bold">Currently in battle</p>
+                )}
               </div>
               
               <Button 
                 onClick={handleDealBug}
                 className="w-full"
-                disabled={turn !== 'player'}
+                disabled={turn !== 'player' || isCurrentBattleBug}
               >
-                Deal
+                {isCurrentBattleBug ? 'Currently Active' : 'Deal'}
               </Button>
             </div>
           </div>
@@ -264,10 +281,11 @@ export const BattleView: React.FC = () => {
                 size="sm" 
                 showActions={false}
                 showDetails={false}
+                isSelected={bug.id === playerBug.id}
               />
             </div>
           )) : (
-            <p className="text-gray-400 col-span-full text-center">No other bugs in your collection</p>
+            <p className="text-gray-400 col-span-full text-center">No bugs in your collection</p>
           )}
         </div>
       </div>
