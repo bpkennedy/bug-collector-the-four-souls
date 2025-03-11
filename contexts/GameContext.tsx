@@ -386,6 +386,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check if opponent is defeated
       if (updatedOpponentBug.hp <= 0) {
         newLog.push(`${opponentBug.name} was defeated!`);
+        newLog.push(`Capturing ${opponentBug.name}...`);
+        
+        // Auto-capture the opponent bug after a short delay
+        setTimeout(() => endBattle('capture'), 2000);
         
         // Return updated state with opponent defeated
         return {
@@ -414,7 +418,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Handle opponent's turn after a short delay
     setTimeout(() => {
       setGameState(prevState => {
-        if (!prevState.activeBattle || prevState.activeBattle.turn !== 'opponent') return prevState;
+        // Make sure the battle is still active and it's the opponent's turn
+        if (!prevState.activeBattle || prevState.activeBattle.turn !== 'opponent' || prevState.activeView !== 'battle') {
+          return prevState;
+        }
         
         const playerBug = prevState.activeBattle.playerBug;
         const opponentBug = prevState.activeBattle.opponentBug;
@@ -449,7 +456,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           newLog.push(`${playerBug.name} was defeated!`);
           
           // Auto-end battle with loss after a short delay
-          setTimeout(() => endBattle('lose'), 1500);
+          setTimeout(() => {
+            // Double-check that the battle is still active before ending it
+            setGameState(checkState => {
+              if (checkState.activeBattle && checkState.activeView === 'battle') {
+                endBattle('lose');
+              }
+              return checkState;
+            });
+          }, 1500);
         }
         
         // Return updated state and switch back to player's turn
@@ -497,7 +512,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Handle opponent's turn after a short delay (similar to executeBattleAction)
     setTimeout(() => {
       setGameState(prevState => {
-        if (!prevState.activeBattle || prevState.activeBattle.turn !== 'opponent') return prevState;
+        // Make sure the battle is still active and it's the opponent's turn
+        if (!prevState.activeBattle || prevState.activeBattle.turn !== 'opponent' || prevState.activeView !== 'battle') {
+          return prevState;
+        }
         
         const playerBug = prevState.activeBattle.playerBug;
         const opponentBug = prevState.activeBattle.opponentBug;
@@ -532,7 +550,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           newLog.push(`${playerBug.name} was defeated!`);
           
           // Auto-end battle with loss after a short delay
-          setTimeout(() => endBattle('lose'), 1500);
+          setTimeout(() => {
+            // Double-check that the battle is still active before ending it
+            setGameState(checkState => {
+              if (checkState.activeBattle && checkState.activeView === 'battle') {
+                endBattle('lose');
+              }
+              return checkState;
+            });
+          }, 1500);
         }
         
         // Return updated state and switch back to player's turn

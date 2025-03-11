@@ -294,7 +294,7 @@ export const BattleView: React.FC = () => {
   
   // Render the battle log that shows the actions and damage
   const renderBattleLog = () => (
-    <Card className="mb-6 flex-grow flex flex-col max-h-36">
+    <Card className="mb-6 flex-grow flex flex-col min-h-[200px] max-h-[300px]">
       <CardHeader className="py-2">
         <CardTitle className="text-base">Battle Log</CardTitle>
       </CardHeader>
