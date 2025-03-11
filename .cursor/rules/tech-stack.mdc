@@ -1,0 +1,12 @@
+---
+description: This is the project's tech stack
+globs: 
+alwaysApply: false
+---
+
+# Technical Stack
+
+- Next.js for the frontend and api, with Typescript.
+- RadixUI and tailwindcss for the frontend interface.
+- End-to-end tests with Cypress.
+- No database, all data to be localstorage

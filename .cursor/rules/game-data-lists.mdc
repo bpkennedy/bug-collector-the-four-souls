@@ -1,0 +1,278 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+## Items
+
+## Capture Items
+
+- **Bug Card** - Basic capture tool for common bugs (30% success rate)
+- **Strong Card** - Improved capture tool for rare bugs (50% success rate)
+- **Golden Card** - Premium capture tool for legendary bugs (70% success rate)
+- **Soul Card** - Special capture tool that works better on evolved bugs (60% success rate)
+- **Type Cards** - Type-specific nets (Fire Net, Water Net, etc.) with increased success rate against matching bug types
+- **Trap Box** - Place on the ground to passively capture bugs that wander into it
+- **Lure Jar** - Attracts specific bug types when placed, making them easier to capture
+
+## Battle Items
+
+- **Bug Repellent** - Lowers opponent bug's stats for 3 turns
+- **Paralysis Powder** - Has a chance to immobilize opponent bug for 1-2 turns
+- **Antidote** - Removes poison status effect
+- **Bug Whistle** - Forces wild bugs to flee battle
+- **Spore Bomb** - Deals damage and may cause sleep status
+- **Predator Scent** - Intimidates opponent bug, lowering their attack
+- **Sticky Honey** - Slows opponent bug and prevents them from switching out
+- **Element Booster** - Temporarily boosts damage of specific type moves (Fire Booster, Water Booster, etc.)
+
+## Healing Items
+
+- **Bug Candy** - Restores 25% HP
+- **Bug Potion** - Restores 50% HP
+- **Super Bug Potion** - Restores 100% HP
+- **Revival Nectar** - Revives a fainted bug with 50% HP
+- **Energy Pollen** - Restores action points or energy
+- **Status Berry** - Cures any negative status effects
+- **Soul Crystal** - Restores SoulPower by a small amount
+
+## Evolution Items
+
+- **Metamorphosis Stone** - Basic evolution catalyst for common bugs
+- **Element Crystals** - Type-specific evolution items (Fire Crystal, Water Crystal, etc.)
+- **Genetic Catalyst** - Forces evolution on bugs that meet level requirements
+- **Ancient Fossil** - Enables prehistoric-specific evolutions
+- **Mechanical Parts** - Required for mechanical bug evolutions
+- **Corruption Essence** - Enables corruption-type evolutions
+- **Soul Fragment** - Rare item needed for legendary evolutions
+
+## Stat Boosting Items
+
+- **Attack Nectar** - Permanently increases a bug's Attack stat by 1
+- **Defense Shell** - Permanently increases a bug's Defense stat by 1
+- **Special Pollen** - Permanently increases a bug's Special stat by 1
+- **Vitality Seed** - Permanently increases a bug's HP by 5
+- **Speed Wings** - Permanently increases a bug's Speed stat by 1
+- **Training Manual** - Allows a bug to learn a new action
+- **Essence Extractor** - Transfers one learned action from one bug to another
+
+## Collectibles
+
+- **Bug Badges** - Collectible items showing mastery of specific bug types
+- **World Tokens** - Special items hidden in each world
+- **Legendary Fragments** - Extremely rare items used to summon legendary bugs
+- **Secret Notes** - Pieces of lore that reveal the game's backstory
+- **Ancient Artifacts** - Collectibles that hint at the final boss's origin
+- **NPC Gifts** - Special items that can be given to NPC bugs for rewards
+
+# Actions
+
+## Basic Actions (Available to Most Bugs)
+
+### Offensive Actions
+
+- **Bite** - Basic physical attack with moderate damage
+- **Tackle** - Basic physical attack with moderate damage
+- **Pounce** - Physical attack with chance to go first
+- **Swarm** - Weak attack that hits multiple times
+- **Wing Slash** - Flying-based attack for winged bugs
+
+### Defensive Actions
+
+- **Harden** - Temporarily increases defense for 3 turns
+- **Burrow** - Hides underground for one turn, avoiding damage
+- **Camouflage** - Reduces chance of being hit next turn
+- **Web Shield** - Creates a protective barrier that reduces damage
+
+### Support Actions
+
+- **Heal** - Recovers a small amount of HP
+- **Cocoon** - Skip a turn to recover more HP
+- **Pheromones** - Reduces opponent's attack stat
+- **Molt** - Removes negative status effects
+
+## Type-Specific Actions
+
+### Fire Type
+
+- **Ember** - Fire damage with chance to cause burn status
+- **Heat Wave** - Moderate fire damage to opponent
+- **Inferno** - Strong fire attack with cooldown
+- **Smoke Screen** - Reduces opponent's accuracy
+- **Solar Flare** - Charges one turn, deals heavy damage next turn
+
+### Water Type
+
+- **Bubble** - Water damage with chance to slow opponent
+- **Splash** - Low damage but can hit multiple times
+- **Tidal Wave** - Strong water attack with cooldown
+- **Water Shield** - Creates a bubble shield reducing fire damage
+- **Dew Drop** - Minor healing action usable every other turn
+
+### Grass Type
+
+- **Leaf Cutter** - Slashing attack using leaves
+- **Spore Cloud** - Chance to put opponent to sleep
+- **Root Bind** - Prevents opponent from switching out
+- **Photosynthesis** - Recover HP while in sunlight
+- **Pollen Blast** - Grass damage with chance to cause confusion
+
+### Rock Type
+
+- **Rock Throw** - Throws rocks for moderate damage
+- **Boulder Roll** - Heavy damage but low accuracy
+- **Crystal Armor** - Greatly increases defense for 2 turns
+- **Mineral Absorb** - Absorbs some damage to heal
+- **Earthquake** - Area damage that affects all bugs on field
+
+### Snow Type
+
+- **Ice Shard** - Fast attack that always goes first
+- **Freeze** - Chance to immobilize opponent for 1-3 turns
+- **Blizzard** - Strong area attack with cooldown
+- **Frost Armor** - Reduces damage and may freeze attackers on contact
+- **Icicle Spear** - Multiple hit attack
+
+### Corruption Type
+
+- **Toxin** - Poisons opponent, causing damage over time
+- **Corrupt** - Reduces opponent's defense
+- **Shadow Strike** - Can hit through defensive barriers
+- **Drain Life** - Deals damage and heals user for portion of damage
+- **Mutation** - Random stat boost to user
+
+## Special Category Actions
+
+### Legendary Bug Actions
+
+- **Soul Drain** - Powerful attack that drains opponent's energy
+- **Ancient Power** - Attack with chance to boost all stats
+- **Dimensional Shift** - Can avoid almost any attack for one turn
+- **Evolution Ray** - Forces temporary evolution for 3 turns
+- **Nature's Wrath** - Type-specific ultimate attack based on bug's primary type
+
+### Boss Bug Actions
+
+- **Swarm Call** - Summons minion bugs to assist
+- **Soul Crush** - Heavy damage that can't be reduced by defense
+- **Adaptive Armor** - Changes type resistance based on opponent's type
+- **Mega Evolution** - Powers up mid-battle when at low health
+- **World Ender** - Ultimate attack (final boss only)
+
+## Overworld Actions
+
+- **Climb** - Allows traversal of vertical surfaces
+- **Cut** - Can clear certain plant obstacles
+
+# Bug Classifications
+
+## Type Legend
+
+- **Fire**: Flame-based bugs, heat-related species
+- **Water**: Aquatic bugs, moisture-dependent species
+- **Grass**: Plant-based bugs, nature-affiliated species
+- **Corruption**: Toxic bugs, mutated or dark species
+- **Rock**: Stone-based bugs, earth-affiliated species
+- **Snow**: Ice-based bugs, cold-affiliated species
+
+## Category Legend
+
+- **Common**: Easily found, basic bugs
+- **Rare**: Harder to find, stronger than common
+- **Legendary**: Very rare, powerful bugs
+- **Mythical**: Extremely rare, near-boss power
+- **Boss**: Four major bosses, one for each world
+- **Final Boss**: The ultimate encounter
+
+## World Bosses
+
+1. **Titan Rock Burner** - Type: Fire, Category: Boss
+2. **Web Dragon** - Type: Corruption, Category: Boss
+3. **Titan Scorpion** - Type: Rock, Category: Boss
+4. **Axolotle Bug Part 1** - Type: Water, Category: Boss
+5. **Axolotle Bug Part 2** - Type: Water, Category: Final Boss
+
+| **Bug Name** | **Type** | **Category** |
+| --- | --- | --- |
+| Black Web | Corruption | Rare |
+| Bleach Leach | Water | Common |
+| Bug Ive | Grass | Common |
+| Disco Web | Corruption | Rare |
+| Flufer | Snow | Rare |
+| Insectapus | Water | Legendary |
+| Leaferfly | Grass | Common |
+| Milk Weederfly | Grass | Common |
+| Otterbug | Water | Common |
+| Pach Ben | Rock | Rare |
+| Shard Bug | Rock | Common |
+| Soft Worm | Grass | Common |
+| Spider Skeleton | Corruption | Rare |
+| Stone Burner | Rock | Rare |
+| Syrup Hopper | Grass | Mythical |
+| Waffle Web | Corruption | Mythical |
+| Bout Ham | Fire | Common |
+| Ciniminipoly | Corruption | Legendary |
+| Crab Hopper | Water | Common |
+| Floweb | Water | Rare |
+| Fly Hopper | Grass | Common |
+| Gnat Bot | Fire | Rare |
+| Ponand | Water | Common |
+| Robo Web | Corruption | Rare |
+| Titan Hopper | Grass | Legendary |
+| Titan Rock Burner | Fire | Boss |
+| Tri Hopper | Grass | Rare |
+| Web Beatle | Corruption | Rare |
+| Web Hopper | Corruption | Rare |
+| Robeatle | Rock | Rare |
+| String Gnat | Grass | Common |
+| Prismarine Hopper | Water | Rare |
+| Bit Mite | Fire | Rare |
+| Bubble Bug | Water | Common |
+| Bun Bug | Grass | Rare |
+| Cori Beatle | Rock | Common |
+| Chomp | Corruption | Rare |
+| Dog Ant | Grass | Common |
+| Electric Web | Fire | Common |
+| Psy Bug | Corruption | Rare |
+| Spot Ant | Grass | Common |
+| Tiger Beatle | Fire | Rare |
+| Tiger Hopper | Fire | Rare |
+| Titan Web | Corruption | Legendary |
+| Tri Beatle | Rock | Rare |
+| Twist Ant | Grass | Common |
+| Web Dragon | Corruption | Boss |
+| Wind Hopper | Snow | Common |
+| Cloud Mite | Snow | Common |
+| Fire Mite | Fire | Common |
+| Fire Scorpion | Fire | Rare |
+| Hair Web | Corruption | Common |
+| Mite Pack | Corruption | Rare |
+| Mite Psy | Corruption | Common |
+| Psy Scorpion | Corruption | Common |
+| Spike Worm | Rock | Rare |
+| Suck Bug | Corruption | Common |
+| TNT Web | Fire | Rare |
+| Titan Mite | Corruption | Legendary |
+| Titan Scorpion | Rock | Boss |
+| Titan Worm | Rock | Legendary |
+| Waffle Scorpion | Fire | Mythical |
+| Waffle Worm | Grass | Mythical |
+| Web | Corruption | Common |
+| Axolotle Bug Part 1 | Water | Boss |
+| Axolotle Bug Part 2 | Water | Final Boss |
+| Bug | Grass | Common |
+| Covid Bugteen | Corruption | Rare |
+| Cubug | Rock | Rare |
+| Downsize Mothra | Grass | Legendary |
+| Drago Bug | Fire | Legendary |
+| Drago Spine | Fire | Rare |
+| Drago Tick | Fire | Rare |
+| Fire Bug | Fire | Common |
+| Mario | Fire | Legendary |
+| Multi Bug | Corruption | Legendary |
+| Pizza Beatle | Fire | Rare |
+| Plantick | Grass | Common |
+| Pretzel Tick | Grass | Rare |
+| Trapmouth Spider | Corruption | Legendary |
+| Waffen SS Bug | Snow | Rare |

@@ -1,0 +1,18 @@
+---
+description: How we should prefer to code
+globs: 
+alwaysApply: false
+---
+
+# Coding pattern preferences
+
+- Prefer simple solutions
+- Use the DRY principle, which means don't repeat yourself, whenever possible.
+- Make changes only that are requested or when you well understand them and they are related to the change asked for.
+- Do not introduce new patterns or technology when fixing a bug or issue.
+- Keep the codebase very clean and organized.
+- Try to limit length of files to about 200-400 lines of code. Refactor at that point.
+- Do not mock data for implementation code or for test code.
+- Never add stubbing or fake data patterns.
+- Never overwrite my .env file without first asking and confirming.
+

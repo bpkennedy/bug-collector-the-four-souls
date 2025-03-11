@@ -1,0 +1,14 @@
+---
+description: How I like to code
+globs: 
+alwaysApply: false
+---
+
+# Coding workflow preferences
+
+- Focus on the areas of code relevant to the task
+- Do not touch code that is unrelated to the task
+- Write thorough tests for all major functionality
+- Avoid making major changes to the patterns, architecture, and technology of how a feature works, after it has been shown to work well, unless explicitly instructed.
+- Always think about what other methods and areas of code might be effected by code changes.
+- Use the KISS principle, which means keep it stupid simple and prefer solutions that don't have to make the average developer think too hard to understand it.
