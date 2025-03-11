@@ -18,6 +18,14 @@ export const metadata: Metadata = {
   description: "Collect bugs, battle, and gather souls in this turn-based strategy game",
 };
 
+// Add a timestamp to force reloads
+metadata.other = {
+  'cache-control': 'no-cache, no-store, must-revalidate',
+  'pragma': 'no-cache',
+  'expires': '0',
+  'version': Date.now().toString()
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
