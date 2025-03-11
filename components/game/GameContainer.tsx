@@ -83,6 +83,7 @@ export const GameContainer: React.FC = () => {
       
       <footer className="bg-gray-900 p-2 border-t border-gray-700 text-center text-xs text-gray-500">
         Use keyboard controls: Arrow keys to move, Z for actions, I for inventory, B for bug collection
+        <div className="mt-1 text-yellow-500">v1.0.1 - Pokémon Card Style</div>
       </footer>
     </div>
   );

@@ -21,6 +21,9 @@ export const BugCard: React.FC<BugCardProps> = ({
   size = 'md',
   showDetails = true
 }) => {
+  // Log to verify we're using the new version
+  console.log('Using Pokemon-style BugCard v1.0.1');
+  
   // Get type color for the card border
   const getTypeColor = (type: string): string => {
     switch (type) {
