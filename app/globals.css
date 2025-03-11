@@ -124,3 +124,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Fix for button icon colors */
+button svg {
+  color: currentColor !important;
+}
+
+/* Ensure outline buttons have visible text */
+.btn-outline, 
+button[variant="outline"] {
+  color: white !important;
+}
+
+/* Ensure buttons are always visible */
+button {
+  color: white;
+}

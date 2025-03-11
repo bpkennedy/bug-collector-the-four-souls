@@ -7,31 +7,58 @@ import { BattleView } from './battle/BattleView';
 import { Button } from '@/components/ui/button';
 
 // This component will be implemented in future updates
-const InventoryView = () => (
-  <div className="flex flex-col items-center justify-center h-full p-4">
-    <h2 className="text-2xl font-bold mb-4">Inventory</h2>
-    <p className="text-gray-400 mb-6">This feature will be implemented in a future update.</p>
-    <Button onClick={() => window.location.reload()}>Return to Game</Button>
-  </div>
-);
+const InventoryView = () => {
+  const { setActiveView } = useGame();
+  
+  return (
+    <div className="flex flex-col items-center justify-center h-full p-4">
+      <h2 className="text-2xl font-bold mb-4">Inventory</h2>
+      <p className="text-gray-400 mb-6">This feature will be implemented in a future update.</p>
+      <Button 
+        onClick={() => setActiveView('overworld')}
+        variant="default"
+      >
+        Return to Game
+      </Button>
+    </div>
+  );
+};
 
 // This component will be implemented in future updates
-const BugCollectionView = () => (
-  <div className="flex flex-col items-center justify-center h-full p-4">
-    <h2 className="text-2xl font-bold mb-4">Bug Collection</h2>
-    <p className="text-gray-400 mb-6">This feature will be implemented in a future update.</p>
-    <Button onClick={() => window.location.reload()}>Return to Game</Button>
-  </div>
-);
+const BugCollectionView = () => {
+  const { setActiveView } = useGame();
+  
+  return (
+    <div className="flex flex-col items-center justify-center h-full p-4">
+      <h2 className="text-2xl font-bold mb-4">Bug Collection</h2>
+      <p className="text-gray-400 mb-6">This feature will be implemented in a future update.</p>
+      <Button 
+        onClick={() => setActiveView('overworld')}
+        variant="default"
+      >
+        Return to Game
+      </Button>
+    </div>
+  );
+};
 
 // This component will be implemented in future updates
-const DialogueView = () => (
-  <div className="flex flex-col items-center justify-center h-full p-4">
-    <h2 className="text-2xl font-bold mb-4">Dialogue</h2>
-    <p className="text-gray-400 mb-6">This feature will be implemented in a future update.</p>
-    <Button onClick={() => window.location.reload()}>Return to Game</Button>
-  </div>
-);
+const DialogueView = () => {
+  const { setActiveView } = useGame();
+  
+  return (
+    <div className="flex flex-col items-center justify-center h-full p-4">
+      <h2 className="text-2xl font-bold mb-4">Dialogue</h2>
+      <p className="text-gray-400 mb-6">This feature will be implemented in a future update.</p>
+      <Button 
+        onClick={() => setActiveView('overworld')}
+        variant="default"
+      >
+        Return to Game
+      </Button>
+    </div>
+  );
+};
 
 export const GameContainer: React.FC = () => {
   const { gameState } = useGame();

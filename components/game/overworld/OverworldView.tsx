@@ -190,7 +190,8 @@ export const OverworldView: React.FC = () => {
   
   return (
     <div className="flex flex-col h-full p-4">
-      <div className="flex justify-between items-center mb-6">
+      {/* Header section */}
+      <div className="flex justify-between items-center mb-4">
         <div>
           <h2 className="text-2xl font-bold">{currentWorld?.name || 'Unknown World'}</h2>
           <p className="text-gray-400">{currentBiome?.name || 'Unknown Biome'}</p>
@@ -202,26 +203,32 @@ export const OverworldView: React.FC = () => {
         </div>
       </div>
       
-      <div className="flex flex-col items-center mb-6">
-        <div className="border border-gray-600 p-2 bg-gray-900 rounded">
-          {renderGrid()}
+      {/* Scrollable middle section */}
+      <div className="flex-1 overflow-y-auto mb-4">
+        {/* Grid and controls */}
+        <div className="flex flex-col items-center mb-4">
+          <div className="border border-gray-600 p-2 bg-gray-900 rounded">
+            {renderGrid()}
+          </div>
+          {renderDirectionControls()}
+          <p className="mt-2 text-sm text-gray-400">Use arrow keys to move. Press I for inventory, B for bug collection.</p>
         </div>
-        {renderDirectionControls()}
-        <p className="mt-2 text-sm text-gray-400">Use arrow keys to move. Press I for inventory, B for bug collection.</p>
+        
+        {/* World info card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>World Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-2">Type: {currentBiome?.type || 'Unknown'}</p>
+            <p className="mb-2">Souls Collected: {gameState.gameProgress.collectedSouls.length} / 4</p>
+            <p>Bugs in Collection: {gameState.gameProgress.collectedBugs.length}</p>
+          </CardContent>
+        </Card>
       </div>
       
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>World Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-2">Type: {currentBiome?.type || 'Unknown'}</p>
-          <p className="mb-2">Souls Collected: {gameState.gameProgress.collectedSouls.length} / 4</p>
-          <p>Bugs in Collection: {gameState.gameProgress.collectedBugs.length}</p>
-        </CardContent>
-      </Card>
-      
-      <div className="grid grid-cols-2 gap-4 mt-auto">
+      {/* Fixed bottom buttons */}
+      <div className="grid grid-cols-2 gap-4 sticky bottom-0">
         <Button 
           onClick={() => setActiveView('inventory')}
           variant="outline"
