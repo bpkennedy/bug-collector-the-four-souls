@@ -5,6 +5,7 @@ import { useGame } from '@/contexts/GameContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { BugCard } from '@/components/game/bugs/BugCard';
 
 export const BattleView: React.FC = () => {
   const { gameState, executeBattleAction, endBattle } = useGame();
@@ -79,8 +80,13 @@ export const BattleView: React.FC = () => {
         <p className="text-lg font-bold">{playerBug.name}</p>
       </div>
       
-      <div className="bg-gray-800 border-2 border-blue-500 rounded-lg overflow-hidden w-32 h-32 flex items-center justify-center">
-        <span className="text-6xl">{getTypeEmoji(playerBug.type)}</span>
+      <div className="relative">
+        <BugCard 
+          bug={playerBug} 
+          size="sm" 
+          showActions={false} 
+          showDetails={false}
+        />
       </div>
     </div>
   );
@@ -100,8 +106,13 @@ export const BattleView: React.FC = () => {
         </div>
       </div>
       
-      <div className="bg-gray-800 border-2 border-red-500 rounded-lg overflow-hidden w-32 h-32 flex items-center justify-center">
-        <span className="text-6xl">{getTypeEmoji(opponentBug.type)}</span>
+      <div className="relative">
+        <BugCard 
+          bug={opponentBug} 
+          size="sm" 
+          showActions={false} 
+          showDetails={false}
+        />
       </div>
     </div>
   );
@@ -151,27 +162,37 @@ export const BattleView: React.FC = () => {
   // Render the actions panel
   const renderActionsPanel = () => (
     <div className="absolute bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700 p-4 z-10">
+      <div className="flex justify-between mb-2">
+        <h3 className="text-lg font-bold">{playerBug.name}&apos;s Actions</h3>
+        <Button size="sm" onClick={() => setActivePanel('none')}>Close</Button>
+      </div>
+      
       <div className="flex gap-4">
-        <div className="bg-gray-800 rounded-lg overflow-hidden w-24 h-24 flex items-center justify-center flex-shrink-0">
+        <div className="w-24 h-24 bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
           <span className="text-5xl">{getTypeEmoji(playerBug.type)}</span>
         </div>
         
-        <div className="grid grid-cols-2 gap-2 flex-grow">
+        <div className="grid grid-cols-1 gap-2 flex-grow">
           {playerBug.actions.map(action => (
-            <Button 
+            <div 
               key={action.id}
-              onClick={() => handleActionSelect(action.id)}
-              disabled={turn !== 'player' || (action.cooldown && action.currentCooldown ? action.currentCooldown > 0 : false)}
-              className="justify-start h-auto py-2"
-              variant="outline"
+              className={`bg-gray-100 rounded-md p-2 cursor-pointer hover:bg-gray-200 ${turn !== 'player' || (action.cooldown && action.currentCooldown ? action.currentCooldown > 0 : false) ? 'opacity-50' : ''}`}
+              onClick={() => turn === 'player' && !(action.cooldown && action.currentCooldown ? action.currentCooldown > 0 : false) && handleActionSelect(action.id)}
             >
-              <div className="text-left">
-                <div className="font-bold">{action.name}</div>
-                <div className="text-xs">{action.description}</div>
-                {action.damage && <div className="text-xs text-yellow-400">Damage: {action.damage}</div>}
-                {action.statusEffect && <div className="text-xs text-purple-400">Status: {action.statusEffect}</div>}
+              <div className="flex items-center">
+                <span className="mr-2 text-lg">{getTypeEmoji(action.type)}</span>
+                <span className="font-bold">{action.name}</span>
+                {action.damage && (
+                  <span className="ml-auto font-bold">{action.damage}</span>
+                )}
               </div>
-            </Button>
+              {action.description && (
+                <p className="text-xs text-gray-600 mt-1">{action.description}</p>
+              )}
+              {action.cooldown && action.currentCooldown && action.currentCooldown > 0 && (
+                <p className="text-xs text-red-500 mt-1">Cooldown: {action.currentCooldown} turns</p>
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -198,23 +219,17 @@ export const BattleView: React.FC = () => {
           </div>
           
           <div className="flex gap-4">
-            <div className="bg-gray-800 rounded-lg overflow-hidden w-24 h-24 flex items-center justify-center flex-shrink-0">
-              <span className="text-5xl">{getTypeEmoji(bug.type)}</span>
-            </div>
+            <BugCard 
+              bug={bug} 
+              size="sm" 
+              showActions={true}
+              showDetails={true}
+            />
             
-            <div className="flex-grow">
-              <div className="grid grid-cols-3 gap-2 text-sm mb-2">
-                <div><span className="font-bold">HP:</span> {bug.hp}/{bug.maxHp}</div>
-                <div><span className="font-bold">ATK:</span> {bug.attack}</div>
-                <div><span className="font-bold">DEF:</span> {bug.defense}</div>
-                <div><span className="font-bold">Type:</span> {bug.type}</div>
-                <div><span className="font-bold">SP:</span> {bug.special}</div>
-                <div><span className="font-bold">LVL:</span> {bug.level}</div>
-              </div>
-              
-              <h4 className="font-bold mt-2">Actions:</h4>
-              <div className="text-xs mb-4">
-                {bug.actions.map(a => a.name).join(', ')}
+            <div className="flex-grow flex flex-col justify-between">
+              <div className="text-sm mb-4">
+                <p className="mb-2">{bug.description || `A ${bug.type.toLowerCase()} type bug.`}</p>
+                <p>Level: {bug.level} | XP: {bug.xp}/{bug.maxXp}</p>
               </div>
               
               <Button 
@@ -241,22 +256,15 @@ export const BattleView: React.FC = () => {
           {deckBugs.length > 0 ? deckBugs.map(bug => (
             <div 
               key={bug.id}
-              className="bg-gray-800 p-2 rounded cursor-pointer hover:bg-gray-700"
+              className="cursor-pointer"
               onClick={() => setSelectedDeckBug(bug.id)}
             >
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-12 h-12 bg-gray-700 rounded flex items-center justify-center">
-                  <span className="text-2xl">{getTypeEmoji(bug.type)}</span>
-                </div>
-                <div>
-                  <div className="font-bold text-sm">{bug.name}</div>
-                  <div className="text-xs">Lvl {bug.level}</div>
-                </div>
-              </div>
-              <div className="text-xs">
-                <div>{bug.type} • {bug.category}</div>
-                <div>HP: {bug.hp}/{bug.maxHp}</div>
-              </div>
+              <BugCard 
+                bug={bug} 
+                size="sm" 
+                showActions={false}
+                showDetails={false}
+              />
             </div>
           )) : (
             <p className="text-gray-400 col-span-full text-center">No other bugs in your collection</p>

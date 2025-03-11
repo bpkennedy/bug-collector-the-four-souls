@@ -2,27 +2,37 @@
 
 import React from 'react';
 import { Bug } from '@/lib/types/game';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Card } from '@/components/ui/card';
 
 interface BugCardProps {
   bug: Bug;
   onClick?: () => void;
   isSelected?: boolean;
   showActions?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  showDetails?: boolean;
 }
 
 export const BugCard: React.FC<BugCardProps> = ({ 
   bug, 
   onClick, 
   isSelected = false,
-  showActions = false
+  showActions = false,
+  size = 'md',
+  showDetails = true
 }) => {
-  // Calculate HP percentage
-  const hpPercentage = Math.floor((bug.hp / bug.maxHp) * 100);
-  
-  // Calculate XP percentage
-  const xpPercentage = Math.floor((bug.xp / bug.maxXp) * 100);
+  // Get type color for the card border
+  const getTypeColor = (type: string): string => {
+    switch (type) {
+      case 'Fire': return 'from-red-500 to-orange-400';
+      case 'Water': return 'from-blue-500 to-cyan-400';
+      case 'Grass': return 'from-green-500 to-lime-400';
+      case 'Rock': return 'from-stone-500 to-amber-400';
+      case 'Snow': return 'from-sky-400 to-indigo-300';
+      case 'Corruption': return 'from-purple-500 to-fuchsia-400';
+      default: return 'from-gray-500 to-gray-400';
+    }
+  };
   
   // Get emoji based on bug type (temporary until we have actual sprites)
   const getTypeEmoji = (type: string) => {
@@ -37,56 +47,127 @@ export const BugCard: React.FC<BugCardProps> = ({
     }
   };
 
+  // Get type icon for the energy symbol
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Fire': return '🔥';
+      case 'Water': return '💧';
+      case 'Grass': return '🌿';
+      case 'Rock': return '🪨';
+      case 'Snow': return '❄️';
+      case 'Corruption': return '☠️';
+      default: return '⭐';
+    }
+  };
+
+  // Size classes
+  const sizeClasses = {
+    sm: 'w-36 h-52',
+    md: 'w-64 h-96',
+    lg: 'w-80 h-112'
+  };
+
+  // Font size classes
+  const fontSizeClasses = {
+    sm: 'text-xs',
+    md: 'text-base',
+    lg: 'text-lg'
+  };
+
+  // Image size classes
+  const imageSizeClasses = {
+    sm: 'w-24 h-24 text-3xl',
+    md: 'w-48 h-48 text-6xl',
+    lg: 'w-60 h-60 text-7xl'
+  };
+
   return (
     <Card 
-      className={`cursor-pointer transition-all ${isSelected ? 'ring-4 ring-yellow-400 transform scale-105' : 'hover:bg-gray-800'}`}
+      className={`relative overflow-hidden ${sizeClasses[size]} ${isSelected ? 'ring-4 ring-yellow-400 transform scale-105' : ''} cursor-pointer transition-all`}
       onClick={onClick}
     >
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-xl">{bug.name}</CardTitle>
-          <span className="text-sm px-2 py-1 bg-gray-700 rounded-full">Lv.{bug.level}</span>
-        </div>
-        <CardDescription>Type: {bug.type} | {bug.category}</CardDescription>
-      </CardHeader>
+      {/* Card background with type-based gradient */}
+      <div className={`absolute inset-0 bg-gradient-to-b ${getTypeColor(bug.type)} opacity-20`}></div>
       
-      <CardContent className="flex flex-col items-center">
-        <div className="w-32 h-32 bg-gray-700 rounded-full flex items-center justify-center mb-4">
-          <span className="text-4xl">{getTypeEmoji(bug.type)}</span>
+      {/* Card border */}
+      <div className="absolute inset-0 border-8 border-gray-200 rounded-lg"></div>
+      
+      {/* Card content */}
+      <div className="relative p-2 flex flex-col h-full">
+        {/* Top section: Name, Type, HP */}
+        <div className="flex justify-between items-center mb-1">
+          <div className="flex items-center">
+            <span className={`font-bold ${fontSizeClasses[size]}`}>{bug.name}</span>
+            <span className={`ml-1 text-xs bg-gray-200 text-gray-700 px-1 rounded`}>BASIC</span>
+          </div>
+          <div className="flex items-center">
+            <span className={`font-bold ${fontSizeClasses[size]}`}>HP {bug.hp}</span>
+            <span className="ml-1">{getTypeIcon(bug.type)}</span>
+          </div>
         </div>
         
-        <div className="w-full space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>HP: {bug.hp}/{bug.maxHp}</span>
-            <span>{hpPercentage}%</span>
+        {/* Bug image */}
+        <div className="bg-gray-100 rounded-md border border-gray-300 flex-grow flex items-center justify-center mb-2">
+          <div className={`${imageSizeClasses[size]} flex items-center justify-center`}>
+            <span>{getTypeEmoji(bug.type)}</span>
           </div>
-          <Progress value={hpPercentage} className="h-2" />
-          
-          <div className="flex justify-between text-sm">
-            <span>XP: {bug.xp}/{bug.maxXp}</span>
-            <span>{xpPercentage}%</span>
-          </div>
-          <Progress value={xpPercentage} className="h-2" />
-        </div>
-      </CardContent>
-      
-      <CardFooter className="flex flex-col items-start">
-        <div className="grid grid-cols-3 gap-2 w-full text-sm mb-2">
-          <div>ATK: {bug.attack}</div>
-          <div>DEF: {bug.defense}</div>
-          <div>SP: {bug.special}</div>
         </div>
         
+        {/* Bug info */}
+        {showDetails && (
+          <div className={`text-center text-gray-600 mb-1 ${fontSizeClasses[size] === 'text-xs' ? 'text-[8px]' : 'text-xs'}`}>
+            No. {bug.id.slice(0, 4)} {bug.category} Bug • Level {bug.level} • {bug.type} Type
+          </div>
+        )}
+        
+        {/* Actions/Attacks */}
         {showActions && (
-          <div className="mt-2 w-full">
-            <h4 className="text-sm font-semibold mb-1">Actions:</h4>
-            <div className="text-xs text-gray-400">
-              {bug.actions.slice(0, 3).map(action => action.name).join(', ')}
-              {bug.actions.length > 3 ? ` +${bug.actions.length - 3} more` : ''}
+          <div className="space-y-1">
+            {bug.actions.slice(0, 2).map((action) => (
+              <div key={action.id} className="bg-gray-100 rounded-md p-1">
+                <div className="flex items-center">
+                  <span className="mr-1">{getTypeIcon(action.type)}</span>
+                  <span className={`font-semibold ${fontSizeClasses[size]}`}>{action.name}</span>
+                  {action.damage && (
+                    <span className={`ml-auto font-bold ${fontSizeClasses[size]}`}>{action.damage}</span>
+                  )}
+                </div>
+                {action.description && (
+                  <p className={`text-xs text-gray-600 ${fontSizeClasses[size] === 'text-xs' ? 'text-[8px]' : ''}`}>
+                    {action.description}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* Stats at bottom */}
+        {showDetails && (
+          <div className="mt-auto">
+            <div className="flex justify-between border-t border-gray-300 pt-1">
+              <div className="flex items-center">
+                <span className="text-red-500 mr-1">⚔️</span>
+                <span className={`${fontSizeClasses[size] === 'text-xs' ? 'text-[8px]' : 'text-xs'}`}>
+                  {bug.attack}
+                </span>
+              </div>
+              <div className="flex items-center">
+                <span className="text-blue-500 mr-1">🛡️</span>
+                <span className={`${fontSizeClasses[size] === 'text-xs' ? 'text-[8px]' : 'text-xs'}`}>
+                  {bug.defense}
+                </span>
+              </div>
+              <div className="flex items-center">
+                <span className="text-purple-500 mr-1">✨</span>
+                <span className={`${fontSizeClasses[size] === 'text-xs' ? 'text-[8px]' : 'text-xs'}`}>
+                  {bug.special}
+                </span>
+              </div>
             </div>
           </div>
         )}
-      </CardFooter>
+      </div>
     </Card>
   );
 }; 
