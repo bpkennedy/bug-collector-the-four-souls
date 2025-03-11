@@ -11,7 +11,6 @@ export default function Home() {
   const { gameState, initializeGame, loadGame } = useGame();
   const [gameLoaded, setGameLoaded] = useState(false);
   const [selectedBugIndex, setSelectedBugIndex] = useState<number | null>(null);
-  const [shouldCheckSavedGame, setShouldCheckSavedGame] = useState(false);
 
   console.log("Home component rendering, gameState.isInitialized:", gameState.isInitialized);
 

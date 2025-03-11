@@ -1,4 +1,4 @@
-import { Bug, Action, BugType, BugCategory } from '../types/game';
+import { Bug, Action, BugType } from '../types/game';
 import { v4 as uuidv4 } from 'uuid';
 
 // Define some basic actions that most bugs can use

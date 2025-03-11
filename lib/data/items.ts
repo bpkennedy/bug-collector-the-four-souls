@@ -1,5 +1,4 @@
-import { Item, ItemCategory, Bug } from '../types/game';
-import { v4 as uuidv4 } from 'uuid';
+import { Item, Bug } from '../types/game';
 
 // Create capture items
 export const captureItems: Item[] = [
@@ -8,7 +7,8 @@ export const captureItems: Item[] = [
     name: 'Bug Card',
     category: 'Capture',
     description: 'A basic capture tool for common bugs. Has a 30% success rate.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // In the actual implementation, this would calculate capture success
       // based on the bug type, category, and HP
     },
@@ -21,7 +21,8 @@ export const captureItems: Item[] = [
     name: 'Strong Card',
     category: 'Capture',
     description: 'An improved capture tool for rare bugs. Has a 50% success rate.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // Implementation would be similar to bug card but with higher success rate
     },
     count: 5,
@@ -33,7 +34,8 @@ export const captureItems: Item[] = [
     name: 'Golden Card',
     category: 'Capture',
     description: 'A premium capture tool for legendary bugs. Has a 70% success rate.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // Implementation for premium capture
     },
     count: 2,
@@ -45,7 +47,8 @@ export const captureItems: Item[] = [
     name: 'Soul Card',
     category: 'Capture',
     description: 'A special capture tool that works better on evolved bugs. Has a 60% success rate.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // Implementation for soul-based capture
     },
     count: 1,
@@ -61,7 +64,8 @@ export const battleItems: Item[] = [
     name: 'Bug Repellent',
     category: 'Battle',
     description: 'Lowers opponent bug\'s stats for 3 turns.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // Implementation would temporarily reduce target stats
     },
     count: 3,
@@ -73,7 +77,8 @@ export const battleItems: Item[] = [
     name: 'Paralysis Powder',
     category: 'Battle',
     description: 'Has a chance to immobilize opponent for 1-2 turns.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // Implementation would apply paralysis status
     },
     count: 2,
@@ -101,7 +106,8 @@ export const battleItems: Item[] = [
     name: 'Spore Bomb',
     category: 'Battle',
     description: 'Deals damage and may cause sleep status.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // Implementation would deal damage and potentially apply sleep status
     },
     count: 2,
@@ -186,7 +192,8 @@ export const evolutionItems: Item[] = [
     name: 'Metamorphosis Stone',
     category: 'Evolution',
     description: 'Basic evolution catalyst for common bugs.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // Implementation would trigger evolution if applicable
     },
     count: 1,
@@ -198,7 +205,8 @@ export const evolutionItems: Item[] = [
     name: 'Fire Crystal',
     category: 'Evolution',
     description: 'Type-specific evolution item for Fire bugs.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // Implementation would trigger fire-type evolution if applicable
     },
     count: 1,
@@ -210,7 +218,8 @@ export const evolutionItems: Item[] = [
     name: 'Water Crystal',
     category: 'Evolution',
     description: 'Type-specific evolution item for Water bugs.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // Implementation would trigger water-type evolution if applicable
     },
     count: 1,
@@ -222,7 +231,8 @@ export const evolutionItems: Item[] = [
     name: 'Grass Crystal',
     category: 'Evolution',
     description: 'Type-specific evolution item for Grass bugs.',
-    effect: (target: Bug) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    effect: (_target: Bug) => {
       // Implementation would trigger grass-type evolution if applicable
     },
     count: 1,
