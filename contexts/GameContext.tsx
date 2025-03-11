@@ -1,9 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+// Only import the types we actually use
 import { 
-  GameState, Bug, Item, World, Soul, GameProgress,
-  Action, StatusEffect
+  GameState, Bug, StatusEffect
 } from '../lib/types/game';
 
 // Define the context interface
@@ -195,7 +195,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   };
 
-  const evolveBug = (bugId: string, evolutionId: string): Bug | null => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const evolveBug = (_bugId: string, _evolutionId: string): Bug | null => {
     // This would typically load the evolved bug data from our database
     // For now, we'll just return null
     return null;
@@ -296,7 +297,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
-  const useItem = (itemId: string, targetBugId: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const useItem = (itemId: string, _targetBugId: string) => {
     // This would typically use the item effect on the target bug
     // For now, we'll just remove one of the item
     removeItem(itemId, 1);
